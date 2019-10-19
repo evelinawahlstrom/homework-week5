@@ -40,13 +40,12 @@ app.post("/movies", (req, res, next) => {
 });
 
 app.get("/movies", (req, res, next) => {
-  Movie.findAll()
-    .then(movies => {
-      res.json(movies);
-    })
+  const limit = req.query.limit || 10
+  const offset = req.query.offset || 0
+    Movie.findAndCountAll({ limit, offset })
+    .then(result => res.json({ movies: result.rows, total: result.count }))
     .catch(next);
 });
-
 
 app.get("/movies/:id", (req, res, next) => {
   Movie.findByPk(req.params.id)
